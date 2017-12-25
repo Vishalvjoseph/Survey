@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Smart Survey</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+   .navbar {
+     margin-bottom: 0;
+     border-radius: 0;
+     color: #FFF;
+     padding: 0 0;
+     font-size: 1.2em;
+     border: 0;
+}
+
+   .navbar-brand {
+      float: left;
+      min-height: 55px;
+      padding: 0 15px 5px;
+}
+   .navbar-inverse .navbar.nav .active a, .navbar-inverse .navbar-nav .active a:focus, .navbar-inverse .navbar-nav .active a:hover {
+  color: #FFF;
+  }
+   .navbar-inverse .navbar-nav li a {
+  color: #D5D5D5;
+}
+   .carousel-caption {
+     top: 45%;
+     transform: translateY(-50%);
+     text-transform: uppercase;
+}
+
+.carousel .item img {
+    width: 100%; /*img width*/
+    height: 100%;
+}
+/*full width container*/
+@media (max-width: 767px) {
+    .block {
+        margin-left: -20px;
+        margin-right: -20px;
+    }
+}
+   .btn {
+     font-size: 18px;
+     padding: 12px 22px;
+    
+}
+
+       
+
+  </style>
+</head>
+
+<body> 
+
+<nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+
+                </button>
+                <a class="navbar-brand" href="#">
+{% load static %}
+
+</a>
+              </div>
+              <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+               <li class="active"><a href="{% url 'survey:index' %}">Home</a></li>
+<li class="active"><a href="#">Contact</a></li>
+<li class="active"><a href="#">Admin</a></li>
+   
+               </ul>
+                   </div>
+  
+          </div>
+        </nav>
+
+<h2> &nbsp&nbsp{{ string }}</h2>
+    <hr>
+
+   <div class="col-md-4">
+
+<form action="" method="post">
+{% csrf_token %}
+
+
+
+
+<h5 style="font-family:verdana;"> {{ q1 }}</h5> 
+            {{ form1.as_p }}
+
+<br>
+
+
+<h5 style="font-family:verdana;"> 
+
+
+
+{{ q2.question_text }} </h5>
+
+
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% for choice in q2.choice_set.all %}
+   &nbsp&nbsp <input type="radio" name="choice2" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+{% endfor %}
+
+<br>
+
+<h5 style="font-family:verdana;"> {{ q3 }}</h5>
+            {{ form3.as_p }}  
+
+
+
+<br>
+
+&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+
+<input type="submit" value="Submit" />
+
+</form>
+
+</div>
+
+
+</body>
+
+</html>
+

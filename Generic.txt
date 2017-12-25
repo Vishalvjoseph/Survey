@@ -1,0 +1,60 @@
+class PersonCreate(CreateView):
+    model = Person
+    fields = ['name']
+    
+class AnswerCreate(CreateView):
+    model = Person
+    template_name = 'survey/create.html'
+    fields = ['name']
+    success_url = reverse_lazy('survey:person-list')
+
+    def get_context_data(self, **kwargs):
+        data = super(AnswerCreate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['answer'] = AnswerInLineFormSet(self.request.POST)
+        else:
+            data['answer'] = AnswerInLineFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        answer = context['answer']
+        with transaction.atomic():
+            self.object = form.save()
+
+            if answer.is_valid():
+                answer.instance = self.object
+                answer.save()
+        return super(AnswerCreate, self).form_valid(form)
+
+
+class PersonUpdate(UpdateView):
+    model = Person
+    success_url = '/'
+    fields = ['name']
+
+
+class AnswerUpdate(UpdateView):
+    model = Person
+    template_name = 'survey/update.html'
+    fields = ['name']
+    success_url = reverse_lazy('survey:person-list')
+
+    def get_context_data(self, **kwargs):
+        data = super(AnswerUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['answer'] = AnswerUpdateInLineFormSet(self.request.POST, instance=self.object)
+        else:
+            data['answer'] = AnswerUpdateInLineFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        answer = context['answer']
+        with transaction.atomic():
+            self.object = form.save()
+
+            if answer.is_valid():
+                answer.instance = self.object
+                answer.save()
+        return super(AnswerUpdate, self).form_valid(form)
