@@ -2,21 +2,22 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Person, Question_free, Question_choice, Answer, Choice, Answer_choice
+from .models import Person, Question, Answer, Choice
 
-
-class ChoiceInline(admin.TabularInline):
+class ChoiceInline(admin.StackedInline):
     model = Choice
-    extra = 2
+    extra = 0
 
-class Question_choiceAdmin(admin.ModelAdmin):
+class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['question_text']}),
+        (None,               {'fields': ['questionnaire_type']}),
+        (None,               {'fields': ['question_category']}),
+        (None,               {'fields': ['question_subcategory']}),
+        (None,               {'fields': ['question_type']}),
     ]
     inlines = [ChoiceInline]
 
+admin.site.register(Question, QuestionAdmin)
 admin.site.register(Person)
-admin.site.register(Question_choice, Question_choiceAdmin)
-admin.site.register(Question_free)
 admin.site.register(Answer)
-admin.site.register(Answer_choice)

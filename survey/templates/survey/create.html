@@ -83,21 +83,57 @@
           </div>
         </nav>
 
-
-
 <h2>&nbsp&nbsp{{ string }}</h2>
     <hr>
     <div class="col-md-4">
+
         <form action="" method="post">
 {% csrf_token %}
-           <h5 style="font-family:verdana;"> {{ q1 }}</h5> 
-            {{ form1.as_p }}
-<br>
-           <h5 style="font-family:verdana;"> {{ q2 }}</h5>
-            {{ form2.as_p }}
-<br>
-            <h5 style="font-family:verdana;"> {{ q3 }}</h5>
-            {{ form3.as_p }}  
+
+{% for q in question_list %}
+
+{% if q.question_type == 'free' %}
+<h5 style="font-family:verdana;"> {{ q }}</h5> 
+            {{ form.as_p }}
+
+
+{% elif q.question_type == 'choice' %}
+<h5 style="font-family:verdana;"> 
+
+&nbsp&nbsp{{ q.question_text }} </h5>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% for choice in q.choice_set.all %}
+
+    &nbsp&nbsp<input type="radio" name={{ q.id }}
+ id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label> <br />
+
+{% if choice.choice_text == 'Other' %}
+
+{{ form_other.as_p }}
+
+{% endif %}
+
+{% endfor %}
+
+
+{% else %}
+<h5 style="font-family:verdana;"> 
+{{ q.question_text }} </h5>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% for choice in q.choice_set.all %}
+   &nbsp&nbsp <input type="checkbox" name={{ q.id }} id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+{% endfor %}
+
+{% endif %}
+
+{% endfor %}
+
 
 <br>
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp

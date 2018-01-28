@@ -17,7 +17,6 @@
      font-size: 1.2em;
      border: 0;
 }
-
    .navbar-brand {
       float: left;
       min-height: 55px;
@@ -30,14 +29,13 @@
   color: #D5D5D5;
 }
    .carousel-caption {
-     top: 45%;
+     top: 50%;
      transform: translateY(-50%);
      text-transform: uppercase;
 }
 
 .carousel .item img {
     width: 100%; /*img width*/
-    height: 100%;
 }
 /*full width container*/
 @media (max-width: 767px) {
@@ -49,7 +47,7 @@
    .btn {
      font-size: 18px;
      padding: 12px 22px;
-    
+     border: 2px solid #FFF;
 }
 
        
@@ -57,7 +55,7 @@
   </style>
 </head>
 
-<body> 
+<body>
 
 <nav class="navbar navbar-inverse">
         <div class="container-fluid">
@@ -85,78 +83,31 @@
           </div>
         </nav>
 
-<h2> &nbsp&nbsp{{ string }}</h2>
+<h2>&nbsp&nbspSections</h2>
     <hr>
 
 
+<div>
+        <ul>
 
-<h5 style="font-family:verdana;"> 
-
-
-
-&nbsp&nbsp{{ q1.question_text }} </h5>
-
-
-<form name="form1" action="" method="post">
-{% csrf_token %}
-
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-{% for choice in q1.choice_set.all %}
-    &nbsp&nbsp<input type="radio" name="choice1" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label> <br />
-{% endfor %}
-
-
-
-
-<h5 style="font-family:verdana;"> 
-
-
-
-&nbsp&nbsp{{ q2.question_text }} </h5>
-
-
-
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-{% for choice in q2.choice_set.all %}
-   &nbsp&nbsp <input type="radio" name="choice2" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-{% endfor %}
-
-
-
-
-
-<h5 style="font-family:verdana;"> 
-
-
-
-&nbsp&nbsp{{ q3.question_text }} </h5>
-
-
-
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
-{% for choice in q3.choice_set.all %}
-    &nbsp&nbsp<input type="radio" name="choice3" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-{% endfor %}
+<a href="{% url 'survey:update' person_id start finish status_1  %}">Job Characteristics</a> 
 
 <br>
 
-&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+<a href="{% url 'survey:update' person_id start finish status_2  %}">Skills and Worker Characteristics</a> 
 
-<input type="submit" value="Submit" />
+<br>
 
-</form>
+<a href="{% url 'survey:update' person_id start finish status_3  %}">Recruitment</a> 
+
+<br>
+
+<a href="{% url 'survey:update' person_id start finish status_4  %}">Placement</a> 
 
 
+   </ul>
 
+</div>
 
 </body>
 
