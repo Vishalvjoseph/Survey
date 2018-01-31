@@ -1,5 +1,9 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from adminsortable.models import SortableMixin
+from adminsortable.fields import SortableForeignKey
+
+
 
 # Create your models here.
 
@@ -28,7 +32,7 @@ class Person(models.Model):
     def __str__(self):
         return self.name
 
-class Question(models.Model):
+class Question(SortableMixin):
     question_text = models.CharField(max_length=500,
                                      verbose_name="Question name",
                                      default=None,
@@ -39,22 +43,42 @@ class Question(models.Model):
                                      verbose_name="Category",
                                      default=None,
                                     )
-    question_subcategory = models.CharField(max_length=200,
-                                     verbose_name="Sub Category",
-                                     default=None,
-                                    )
     question_type = models.CharField(max_length=200, verbose_name="Question Type", choices=TYPE)
 
-    person = models.ManyToManyField(Person, through='Answer')
+    person = models.ManyToManyField(Person)
+
+    class Meta:
+
+        ordering = ['the_order']
+
+    # define the field the model should be ordered by
+    the_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     
     def __str__(self):
         return self.question_text
 
+
     
-class Answer(models.Model):
+class Answer_Center(models.Model):
     person = models.ForeignKey(Person)
     question = models.ForeignKey(Question)
-    answer_text = models.CharField(max_length=200, verbose_name="", blank=True)
+    answer_text = models.CharField(max_length=500, verbose_name="", blank=True)
+    def __str__(self):
+        return self.answer_text
+
+
+class Answer_Worker(models.Model):
+    person = models.ForeignKey(Person)
+    question = models.ForeignKey(Question)
+    answer_text = models.CharField(max_length=500, verbose_name="", blank=True)
+    def __str__(self):
+        return self.answer_text
+
+
+class Answer_Employer(models.Model):
+    person = models.ForeignKey(Person)
+    question = models.ForeignKey(Question)
+    answer_text = models.CharField(max_length=500, verbose_name="", blank=True)
     def __str__(self):
         return self.answer_text
 
