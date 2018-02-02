@@ -90,19 +90,27 @@
 <div>
         <ul>
 
-<a href="{% url 'survey:update' person_id start finish status_1  %}">Job Characteristics</a> 
+<a href="{% url 'survey:update-worker' person_id start finish status_1  %}">Demographic</a> 
 
 <br>
 
-<a href="{% url 'survey:update' person_id start finish status_2  %}">Skills and Worker Characteristics</a> 
+<a href="{% url 'survey:update-worker' person_id start finish status_2  %}">Skills-A</a> 
 
 <br>
 
-<a href="{% url 'survey:update' person_id start finish status_3  %}">Recruitment</a> 
+<a href="{% url 'survey:update-worker' person_id start finish status_3  %}">Skills-B</a> 
 
 <br>
 
-<a href="{% url 'survey:update' person_id start finish status_4  %}">Placement</a> 
+<a href="{% url 'survey:update-worker' person_id start finish status_4  %}">Job Search</a> 
+
+<br>
+
+<a href="{% url 'survey:update-worker' person_id start finish status_5  %}">Work Experience</a> 
+
+<br>
+
+<a href="{% url 'survey:update-worker' person_id start finish status_6  %}">Work Experience-Employed</a> 
 
 
    </ul>

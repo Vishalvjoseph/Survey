@@ -23,13 +23,12 @@ def PersonCreate(request):          #creates the Person object
 
     if request.method == 'POST':
         form = PersonForm(request.POST)    #uses the PersonForm which is based on the Person model
-        val = request.POST.getlist('form-answer_text', '')
         if form.is_valid():
             form.save()
             assign = Person.objects.all().latest('id').id
             start = 0
             finish = 3
-            return HttpResponseRedirect(reverse('survey:detail-create', args=(assign,)))
+            return HttpResponseRedirect(reverse('survey:detail-worker-create', args=(assign,)))
 
     else:
         form = PersonForm(prefix="form")
@@ -49,7 +48,7 @@ def PersonUpdate(request, pk):    # The view that helps in editing the name of a
             start = 0
             finish = 3
 
-            return HttpResponseRedirect(reverse('survey:detail-update', args=(person.id,)))
+            return HttpResponseRedirect(reverse('survey:detail-worker-update', args=(person.id,)))
 
     else:
         form = PersonForm(instance=person)
@@ -405,8 +404,10 @@ def DetailWorker_create(request, person_id):    #this view displays the various 
     status_2 = 2
     status_3 = 3
     status_4 = 4
+    status_5 = 5
+    status_6 = 6
     
-    context = {'start':start, 'finish':finish, 'person_id':person_id, 'status_1':status_1, 'status_2':status_2, 'status_3':status_3, 'status_4':status_4}
+    context = {'start':start, 'finish':finish, 'person_id':person_id, 'status_1':status_1, 'status_2':status_2, 'status_3':status_3, 'status_4':status_4, 'status_5':status_5, 'status_6':status_6}
     
     return render(request, 'survey/detail_create.html', context)
 
@@ -418,21 +419,24 @@ def Create_Worker(request, person_id, start, finish, status):      #This is the 
     status = int(status)
 
     if status == 1:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Job Characteristics")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Job Characteristics")[start:finish]
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Demographic")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Demographic")[start:finish]
     elif status == 2:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Skills and Worker Characteristics")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Skills and Worker Characteristics")[start:finish]
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-A")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-A")[start:finish]
     elif status == 3:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Recruitment")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Recruitment")[start:finish]
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-B")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-B")[start:finish]
+    elif status == 4:
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Job Search")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Job Search")[start:finish]
+    elif status == 5:
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience")[start:finish]
     else:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Placement")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Placement")[start:finish]
-    
-##    question_all = Question.objects.filter(question_category=str(category['string1'])).filter(question_category=str(category['string2']))
-##    question_list = Question.objects.filter(question_category=str(category['string1'])).filter(question_category=str(category['string2']))[start:finish]
-    
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience-Employed")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience-Employed")[start:finish]
+            
     person = get_object_or_404(Person, pk=person_id)
     start = start + 3
     finish = finish + 3
@@ -448,23 +452,23 @@ def Create_Worker(request, person_id, start, finish, status):      #This is the 
         for q in question_list:
             print(i)
             if q.question_type == 'free':
-                form = AnswerForm(request.POST, prefix="form")
+                form = AnswerWorkerForm(request.POST, prefix="form")
                 if form.is_valid():
                     values = request.POST.getlist('form-answer_text', '')
-                    answer = Answer.objects.create(person=person, question=q, answer_text=values[i])
+                    answer = Answer_Worker.objects.create(person=person, question=q, answer_text=values[i])
                     i = i+1
                         
             elif q.question_type == 'choice':
                 s1 = q.choice_set.get(pk=request.POST.get(str(q.id)))
                 if str(s1) == 'Other':
-                    form_other = AnswerForm(request.POST, prefix="form_choice")
+                    form_other = AnswerWorkerForm(request.POST, prefix="form_choice")
                     if form_other.is_valid():
                         values_other = request.POST.getlist('form_choice-answer_text', '')
-                        answer = Answer.objects.create(person=person, question=q, answer_text=values_other[j])
+                        answer = Answer_Worker.objects.create(person=person, question=q, answer_text=values_other[j])
                         j = j+1
 
                 else:
-                    answer = Answer.objects.create(person=person, question=q, answer_text=s1)
+                    answer = Answer_Worker.objects.create(person=person, question=q, answer_text=s1)
     
             else:
                 print(request.POST.getlist(str(q.id), ''))
@@ -472,20 +476,20 @@ def Create_Worker(request, person_id, start, finish, status):      #This is the 
                 tot=len(li)
                 for k in range(0,tot):
                     s1 = q.choice_set.get(pk=li[k])
-                    answer = Answer.objects.create(person=person, question=q, answer_text=s1)
+                    answer = Answer_Worker.objects.create(person=person, question=q, answer_text=s1)
 
                 
 
         if finish >= total+3:
-            return HttpResponseRedirect(reverse('survey:detail-create', args=(person.id,)))
+            return HttpResponseRedirect(reverse('survey:detail-worker-create', args=(person.id,)))
 
         else:
-            return HttpResponseRedirect(reverse('survey:create', args=(person.id, start, finish, status)))
+            return HttpResponseRedirect(reverse('survey:create-worker', args=(person.id, start, finish, status)))
 
 
     else:
-        form = AnswerForm(prefix="form")
-        form_other = AnswerForm(prefix="form_choice")
+        form = AnswerWorkerForm(prefix="form")
+        form_other = AnswerWorkerForm(prefix="form_choice")
         
         context = {'form':form, 'form_other':form_other, 'question_list':question_list}
 
@@ -500,8 +504,10 @@ def DetailWorker_update(request, person_id):     # Displays the various sections
     status_2 = 2
     status_3 = 3
     status_4 = 4
+    status_5 = 5
+    status_6 = 6
 
-    context = {'start':start, 'finish':finish, 'status_1':status_1, 'status_2':status_2, 'status_3':status_3, 'status_4':status_4, 'person_id':person_id}
+    context = {'start':start, 'finish':finish, 'status_1':status_1, 'status_2':status_2, 'status_3':status_3, 'status_4':status_4, 'status_5':status_5, 'status_6':status_6, 'person_id':person_id}
     
     return render(request, 'survey/detail_update.html', context)
 
@@ -512,19 +518,25 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
     finish = int(finish)
     status = int(status)
 
-    if status == 1:              #The necessary question lists are generated depending on the link clicked in the previous view
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Job Characteristics")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Job Characteristics")[start:finish]
+    if status == 1:
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Demographic")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Demographic")[start:finish]
     elif status == 2:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Skills and Worker Characteristics")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Skills and Worker Characteristics")[start:finish]
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-A")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-A")[start:finish]
     elif status == 3:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Recruitment")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Recruitment")[start:finish]
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-B")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Skills-B")[start:finish]
+    elif status == 4:
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Job Search")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Job Search")[start:finish]
+    elif status == 5:
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience")[start:finish]
     else:
-        question_all = Question.objects.filter(questionnaire_type="training center").filter(question_category="Placement")
-        question_list = Question.objects.filter(questionnaire_type="training center").filter(question_category="Placement")[start:finish]
-
+        question_all = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience-Employed")
+        question_list = Question.objects.filter(questionnaire_type="worker").filter(question_category="Work Experience-Employed")[start:finish]
+        
 
     if len(question_list) == 3:   # This block assigns the questions from the list to individual objects
         q1 = question_list[0]
@@ -559,51 +571,51 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
 
     if q1 is not None:
         if q1.question_type == 'multiple':
-            multi = Answer.objects.filter(person=person).filter(question=q1) 
+            multi = Answer_Worker.objects.filter(person=person).filter(question=q1) 
             print(multi)
             for i in range(0,len(multi)):
                 ans_list_multi1.append(multi[i].answer_text)
         elif q1.question_type == 'choice':
-            ans1 = Answer.objects.filter(person=person).filter(question=q1).first()
+            ans1 = Answer_Worker.objects.filter(person=person).filter(question=q1).first()
             choice_list = q1.choice_set.all()
             for i in range(0,len(choice_list)):
                 ans_list_choice1.append(choice_list[i].choice_text)
         else:
-            ans1 = Answer.objects.filter(person=person).filter(question=q1).first()
+            ans1 = Answer_Worker.objects.filter(person=person).filter(question=q1).first()
         
         
     if q2 is not None:
         if q2.question_type == 'multiple':
-            multi = Answer.objects.filter(person=person).filter(question=q2)
+            multi = Answer_Worker.objects.filter(person=person).filter(question=q2)
             for i in range(0,len(multi)):
                 ans_list_multi2.append(multi[i].answer_text)
         elif q2.question_type == 'choice':
-            ans2 = Answer.objects.filter(person=person).filter(question=q2).first()
+            ans2 = Answer_Worker.objects.filter(person=person).filter(question=q2).first()
             choice_list = q2.choice_set.all()
             for i in range(0,len(choice_list)):
                 ans_list_choice2.append(choice_list[i].choice_text)
         else:
-            ans2 = Answer.objects.filter(person=person).filter(question=q2).first()
+            ans2 = Answer_Worker.objects.filter(person=person).filter(question=q2).first()
         
 
     if q3 is not None:
         if q3.question_type == 'multiple':
-            multi = Answer.objects.filter(person=person).filter(question=q3)
+            multi = Answer_Worker.objects.filter(person=person).filter(question=q3)
             for i in range(0,len(multi)):
                 ans_list_multi3.append(multi[i].answer_text)
         elif q3.question_type == 'choice':
-            ans3 = Answer.objects.filter(person=person).filter(question=q3).first()
+            ans3 = Answer_Worker.objects.filter(person=person).filter(question=q3).first()
             choice_list = q3.choice_set.all()
             for i in range(0,len(choice_list)):
                 ans_list_choice3.append(choice_list[i].choice_text)
         else:
-            ans3 = Answer.objects.filter(person=person).filter(question=q3).first()
+            ans3 = Answer_Worker.objects.filter(person=person).filter(question=q3).first()
            
         
     if request.method == 'POST':
         if q1 is not None:
             if q1.question_type == 'free':
-                form1 = AnswerForm(request.POST, prefix="form1", instance=ans1)
+                form1 = AnswerWorkerForm(request.POST, prefix="form1", instance=ans1)
                 if form1.is_valid():
                     ans1 = form1.save(commit=False)
                     ans1.question = q1
@@ -613,7 +625,7 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
             elif q1.question_type == 'choice':
                 s1 = q1.choice_set.get(pk=request.POST['choice1'])
                 if str(s1) == 'Other':
-                    form1 = AnswerForm(request.POST, prefix="form1", instance=ans1)
+                    form1 = AnswerWorkerForm(request.POST, prefix="form1", instance=ans1)
                     if form1.is_valid():
                         ans1 = form1.save(commit=False)
                         ans1.question = q1
@@ -629,19 +641,19 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
 
             else:
                 li = request.POST.getlist("choice1", '')
-                multi = Answer.objects.filter(person=person).filter(question=q1)
+                multi = Answer_Worker.objects.filter(person=person).filter(question=q1)
                 multi.delete()
                 tot=len(li)
                 for i in range(0,tot):
                     s1 = q1.choice_set.get(pk=li[i])
-                    answer = Answer.objects.create(person=person, question=q1, answer_text=s1)
+                    answer = Answer_Worker.objects.create(person=person, question=q1, answer_text=s1)
                     
 
 
         if q2 is not None:
 
             if q2.question_type == 'free':
-                form2 = AnswerForm(request.POST, prefix="form2", instance=ans2)
+                form2 = AnswerWorkerForm(request.POST, prefix="form2", instance=ans2)
                 if form2.is_valid():
                     ans2 = form2.save(commit=False)
                     ans2.question = q2
@@ -651,7 +663,7 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
             elif q2.question_type == 'choice':
                 s2 = q2.choice_set.get(pk=request.POST['choice2'])
                 if str(s2) == 'Other':
-                    form2 = AnswerForm(request.POST, prefix="form2", instance=ans2)
+                    form2 = AnswerWorkerForm(request.POST, prefix="form2", instance=ans2)
                     if form2.is_valid():
                         ans2 = form2.save(commit=False)
                         ans2.question = q2
@@ -665,18 +677,18 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
 
             else:
                 li = request.POST.getlist("choice2", '')
-                multi = Answer.objects.filter(person=person).filter(question=q2)
+                multi = Answer_Worker.objects.filter(person=person).filter(question=q2)
                 multi.delete()
                 tot=len(li)
                 for i in range(0,tot):
                     s2 = q2.choice_set.get(pk=li[i])
-                    answer = Answer.objects.create(person=person, question=q2, answer_text=s2)
+                    answer = Answer_Worker.objects.create(person=person, question=q2, answer_text=s2)
 
 
         if q3 is not None:
 
             if q3.question_type == 'free':
-                form3 = AnswerForm(request.POST, prefix="form3", instance=ans3)
+                form3 = AnswerWorkerForm(request.POST, prefix="form3", instance=ans3)
                 if form3.is_valid():  
                     ans3 = form3.save(commit=False)
                     ans3.question = q3
@@ -686,7 +698,7 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
             elif q3.question_type == 'choice':
                 s3 = q3.choice_set.get(pk=request.POST['choice3'])
                 if str(s3) == 'Other':
-                    form3 = AnswerForm(request.POST, prefix="form3", instance=ans3)
+                    form3 = AnswerWorkerForm(request.POST, prefix="form3", instance=ans3)
                     if form3.is_valid():
                         ans3 = form3.save(commit=False)
                         ans3.question = q3
@@ -700,24 +712,24 @@ def Update_Worker(request, person_id, start, finish, status):   # Updates the an
 
             else:
                 li = request.POST.getlist("choice3", '')
-                multi = Answer.objects.filter(person=person).filter(question=q3)
+                multi = Answer_Worker.objects.filter(person=person).filter(question=q3)
                 multi.delete()
                 tot=len(li)
                 for i in range(0,tot):
                     s3 = q3.choice_set.get(pk=li[i])
-                    answer = Answer.objects.create(person=person, question=q3, answer_text=s3) #creates new objects after deleting the old ones so that there is no redundancy
+                    answer = Answer_Worker.objects.create(person=person, question=q3, answer_text=s3) #creates new objects after deleting the old ones so that there is no redundancy
 
         if finish >= total+3:   #checks if condition has been met to generate next list of questions
-            return HttpResponseRedirect(reverse('survey:detail-update', args=(person.id,)))
+            return HttpResponseRedirect(reverse('survey:detail-worker-update', args=(person.id,)))
 
         else:
-            return HttpResponseRedirect(reverse('survey:update', args=(person.id, start, finish, status))) #redirects back to same view to process/display next set of questions in the same list
+            return HttpResponseRedirect(reverse('survey:update-worker', args=(person.id, start, finish, status))) #redirects back to same view to process/display next set of questions in the same list
         
 
     else:
-        form1 = AnswerForm(prefix="form1", instance=ans1)
-        form2 = AnswerForm(prefix="form2", instance=ans2)
-        form3 = AnswerForm(prefix="form3", instance=ans3)
+        form1 = AnswerWorkerForm(prefix="form1", instance=ans1)
+        form2 = AnswerWorkerForm(prefix="form2", instance=ans2)
+        form3 = AnswerWorkerForm(prefix="form3", instance=ans3)
 
         context = {'form1':form1, 'form2':form2, 'form3':form3, 'q1':q1, 'q2':q2, 'q3':q3, 'ans1':ans1, 'ans2':ans2, 'ans3':ans3, 'ans_list_choice1':ans_list_choice1, 'ans_list_multi1':ans_list_multi1, 'ans_list_choice2':ans_list_choice2, 'ans_list_multi2':ans_list_multi2, 'ans_list_choice3':ans_list_choice3, 'ans_list_multi3':ans_list_multi3}
 
