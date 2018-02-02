@@ -25,7 +25,7 @@ SECRET_KEY = 'r9_@ko6l1n$(gg6(wc!9&6e!@1x(t6()t1%fpgz0y1-8l5s1(r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.225.161','10.197.0.198','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['192.168.225.161','10.197.0.198','localhost','127.0.0.1','vivapeople.webfactional.com','www.vivapeople.webfactional.com']
 
 
 # Application definition
@@ -78,8 +78,11 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.path.join(BASE_DIR, 'survey_database'),
+        'PASSWORD': 'adrzc0kn',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -122,4 +125,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = '/home/vivapeople/webapps/static_media_app/'
+
+STATICFILES_DIRS = (
+    '/home/vivapeople/src/extra_static_media/',
+    '/home/vivapeople/webapps/survey/even_more_static_media/',
+)
